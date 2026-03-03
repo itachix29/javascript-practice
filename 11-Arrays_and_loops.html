@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Arrays and Loops</title>
+    
+  </head>
+  <body>
+    <script>
+      /*
+       const myArray = [10,20,30];
+        console.log(myArray);
+
+        console.log(myArray[0]);
+        myArray[0] = 99;
+        console.log(myArray);*/
+
+        //loop 
+       /* let i =1;
+        while(i<=5){
+          console.log(i);
+          i++;
+        }
+
+        for(let i=1;i<=5;i++){
+          console.log(i);
+        }
+
+        let randomNumber = 0;
+        while(randomNumber<0.5){
+          randomNumber = Math.random();
+          
+        }
+        console.log(randomNumber);*/
+       /* const todoList =[
+          'make dinner',
+          'wash dishes',
+          'watch youtube'
+        ];
+        for(let i=0;i<=todoList.length-1;i++){//i<todolist.length is same
+          console.log(todoList[i]);
+        }*/
+
+        const numArray=[1,1,3];//accumulator pattern
+        let total=0;
+        for(let i =0; i<numArray.length;i++){
+          const nums =numArray[i];
+          total= total + nums;
+
+        }
+        console.log(total);
+
+        const numsDoubles = [];
+        for(let i=0;i<numArray.length;i++){
+          const num=numArray[i];
+          numsDoubles.push(num*2);
+
+        }console.log(numsDoubles);
+    </script>
+    
+  </body>
+</html>

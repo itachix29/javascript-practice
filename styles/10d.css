@@ -1,0 +1,13 @@
+body{.toggle-button{
+        background-color: black;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        }
+        .is-toggled{
+          background-color: lightgrey;  
+          color: black;
+
+        }
+    }

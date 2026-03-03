@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+    .js-value{
+        border: none;
+        font-size: 15px;
+        background-color: rgb(22, 11, 11);
+        color: white;
+        border-radius: 50px;
+        padding: 10px;
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    }
+    .js-op{
+        border: none;
+        font-size: 15px;
+        background-color: orange;
+        color: white;
+        border-radius: 50px;
+        padding: 10px;
+    }
+    </style>
+  </head>
+  <body>
+    <!-- Create an element to display the calculation. -->
+    <p class="js-calculation"></p>
+
+    <p>
+      <button onclick="
+        updateCalculation('1');
+        
+      "class="js-value";>1</button>
+
+      <button onclick="
+        updateCalculation('2');
+      "class="js-value";>2</button>
+
+      <button onclick="
+        updateCalculation('3');
+      "class="js-value";>3</button>
+
+      <button onclick="
+        updateCalculation(' + ');
+      "class="js-op";>+</button>
+    </p>
+
+    <p>
+      <button onclick="
+        updateCalculation('4');
+      "class="js-value";>4</button>
+
+      <button onclick="
+        updateCalculation('5');
+      "class="js-value";>5</button>
+
+      <button onclick="
+        updateCalculation('6');
+      "class="js-value";>6</button>
+
+      <button onclick="
+        updateCalculation(' - ');
+      "class="js-op";>-</button>
+    </p>
+
+    <p>
+      <button onclick="
+        updateCalculation('7');
+      "class="js-value";>7</button>
+
+      <button onclick="
+        updateCalculation('8');
+      "class="js-value";>8</button>
+
+      <button onclick="
+        updateCalculation('9');
+      "class="js-value";>9</button>
+
+      <button onclick="
+        updateCalculation(' * ');
+      "class="js-op">*</button>
+    </p>
+
+    <p>
+      <button onclick="
+        updateCalculation('0');
+      "class="js-value";>0</button>
+
+      <button onclick="
+        updateCalculation('.');
+      "class="js-value";>.</button>
+
+      <button onclick="
+        // Note: eval() takes a string and runs it as code.
+        // Avoid using eval() in real world projects since
+        // it can potentially be given harmful code to run.
+        // Only use eval() for learning purposes.
+        calculation = eval(calculation);
+
+        // Display the calculation on the page
+        // instead of console.log
+        displayCalculation();
+
+        localStorage.setItem('calculation', calculation);
+      "class="js-value";>=</button>
+
+      <button onclick="
+        updateCalculation(' / ');
+      "class="js-op"";>/</button>
+    </p>
+
+    <p>
+      <button onclick="
+        calculation = '';
+
+        // Display the calculation on the page
+        // instead of console.log
+        displayCalculation();
+
+        localStorage.setItem('calculation', calculation);
+      "class="js-value";>Clear</button>
+    </p>
+
+    <script>
+      let calculation = localStorage.getItem('calculation') || '';
+
+      // Display the calculation when the page first loads.
+      displayCalculation();
+
+      function updateCalculation(value) {
+        
+        calculation += value;
+
+        // Display the calculation on the page
+        // instead of console.log
+        displayCalculation();
+
+        localStorage.setItem('calculation', calculation);
+      }
+
+      function displayCalculation() {
+        document.querySelector('.js-calculation')
+          .innerHTML = calculation;
+      }
+    </script>
+  </body>
+</html>
