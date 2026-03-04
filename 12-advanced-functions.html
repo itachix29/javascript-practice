@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Advanced Functions</title>
+</head>
+<body>
+    <script>
+       /* function greeting(){//running the function.
+            console.log('Hello!')
+        }
+        greeting();
+
+        const object1 ={
+            num:2,
+            fun: function greeting(){
+                console.log('hello3');
+            }
+        }*/
+
+        setTimeout(function(){        // here timeout is inbuild which has 2 parameter(values) function can also be used as value.
+            console.log('timeout');   //setTimeout(v1,v2);time is in millisecs - 1sec=1000ms
+        },3000);                       //after 3 secs it will display timeout in console automatically
+                                    // this becomes asynchronous code which is the line will not wait 3 secs to execute and directly move on to nextcode.
+        console.log('next line'); 
+
+        setInterval(function(){
+            console.log('interval');//here this wait for 3 secs and prints interval every 3 secs
+        },3000);
+
+    </script>
+    
+</body>
+</html>
