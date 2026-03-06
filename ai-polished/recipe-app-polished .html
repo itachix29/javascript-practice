@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Recipe Finder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #fdf6ec;
+      --warm: #f5ebe0;
+      --border: #e0c9a6;
+      --ink: #2c1810;
+      --ink-light: #7a5c45;
+      --accent: #c0392b;
+      --accent-dim: #a93226;
+      --accent-warm: #e67e22;
+      --shadow: rgba(44, 24, 16, 0.1);
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--cream);
+      min-height: 100vh;
+      color: var(--ink);
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c0a882' fill-opacity='0.07'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px 24px 60px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      animation: fadeUp 0.6s ease both;
+    }
+    .header-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-warm);
+      margin-bottom: 10px;
+    }
+    .header h1 {
+      font-family: 'Lora', serif;
+      font-size: 52px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+    .header h1 em { font-style: italic; color: var(--accent); }
+    .header-sub {
+      font-size: 15px;
+      color: var(--ink-light);
+      font-style: italic;
+      font-family: 'Lora', serif;
+    }
+
+    .ornament {
+      text-align: center;
+      color: var(--border);
+      font-size: 20px;
+      letter-spacing: 12px;
+      margin: 16px 0 36px;
+    }
+
+    .search-wrap {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 48px;
+      animation: fadeUp 0.6s ease 0.1s both;
+    }
+    .search-inner {
+      display: flex;
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 50px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px var(--shadow);
+      width: 100%;
+      max-width: 520px;
+    }
+    #Input-js {
+      flex: 1;
+      border: none;
+      outline: none;
+      padding: 16px 24px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 15px;
+      color: var(--ink);
+      background: transparent;
+    }
+    #Input-js::placeholder { color: #c4a882; }
+    #Search-button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 16px 28px;
+      font-family: 'Lora', serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      border-radius: 0 50px 50px 0;
+      white-space: nowrap;
+    }
+    #Search-button:hover { background: var(--accent-dim); }
+
+    .state-msg {
+      text-align: center;
+      padding: 40px;
+      font-family: 'Lora', serif;
+      font-style: italic;
+      font-size: 18px;
+      color: var(--ink-light);
+      animation: fadeUp 0.4s ease both;
+    }
+    .state-msg.error { color: var(--accent); }
+
+    .results-label {
+      font-family: 'Lora', serif;
+      font-size: 13px;
+      font-style: italic;
+      color: var(--ink-light);
+      text-align: center;
+      margin-bottom: 28px;
+      animation: fadeUp 0.4s ease both;
+    }
+    .results-label strong { color: var(--ink); font-style: normal; }
+
+    #display-js {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 28px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 16px var(--shadow);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      animation: fadeUp 0.4s ease both;
+      display: flex;
+      flex-direction: column;
+    }
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 32px rgba(44,24,16,0.15);
+    }
+    .card-img-wrap {
+      position: relative;
+      overflow: hidden;
+      height: 180px;
+    }
+    .card-img-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+      display: block;
+    }
+    .card:hover .card-img-wrap img { transform: scale(1.06); }
+    .card-cuisine {
+      position: absolute;
+      top: 12px; right: 12px;
+      background: var(--accent);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+    .card-body {
+      padding: 18px 20px 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .card-name {
+      font-family: 'Lora', serif;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+    .card-category {
+      font-size: 12px;
+      color: var(--ink-light);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 16px;
+      flex: 1;
+    }
+    .card-category::before { content: '🍽️'; }
+
+    .view-recipe-btn {
+      background: var(--warm);
+      color: var(--accent);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      font-family: 'Lora', serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      width: 100%;
+    }
+    .view-recipe-btn:hover {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    /* Recipe detail */
+    .recipe-detail { animation: fadeUp 0.4s ease both; }
+    .back-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--ink-light);
+      border-radius: 10px;
+      padding: 10px 20px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      cursor: pointer;
+      margin-bottom: 32px;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .back-btn:hover { background: var(--warm); border-color: var(--ink-light); }
+
+    .recipe-hero {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 40px;
+      margin-bottom: 36px;
+    }
+    @media (max-width: 700px) { .recipe-hero { grid-template-columns: 1fr; } }
+
+    .recipe-hero img {
+      width: 100%;
+      border-radius: 20px;
+      object-fit: cover;
+      box-shadow: 0 8px 32px var(--shadow);
+      aspect-ratio: 1;
+    }
+    .recipe-meta { display: flex; flex-direction: column; justify-content: center; }
+    .recipe-cuisine-tag {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+      width: fit-content;
+    }
+    .recipe-title {
+      font-family: 'Lora', serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+    .recipe-category {
+      font-size: 14px;
+      color: var(--ink-light);
+      font-style: italic;
+      font-family: 'Lora', serif;
+    }
+    .recipe-instructions-label {
+      font-family: 'Lora', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--border);
+    }
+    .recipe-instructions {
+      font-size: 15px;
+      line-height: 1.9;
+      color: var(--ink-light);
+      white-space: pre-line;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 32px;
+      box-shadow: 0 2px 12px var(--shadow);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="header">
+      <div class="header-eyebrow">Home Kitchen</div>
+      <h1>Find a <em>Recipe</em></h1>
+      <p class="header-sub">Search from thousands of delicious meals around the world</p>
+    </div>
+
+    <div class="ornament">✦ ✦ ✦</div>
+
+    <div class="search-wrap">
+      <div class="search-inner">
+        <input placeholder='Try "pasta", "chicken", "sushi"...' id="Input-js">
+        <button id="Search-button">Search →</button>
+      </div>
+    </div>
+
+    <div id="results-label"></div>
+    <div id="display-js"></div>
+  </div>
+
+  <!--Polished With AI-->
+  <script>
+    let lastResults = [];
+
+    async function fetcher() {
+      const query = document.getElementById("Input-js").value.trim();
+      if (!query) return;
+
+      const displayEl = document.getElementById("display-js");
+      const labelEl = document.getElementById("results-label");
+
+      displayEl.style.display = 'grid';
+      displayEl.innerHTML = `<div class="state-msg">Searching for "${query}"...</div>`;
+      labelEl.innerHTML = '';
+
+      try {
+        const url = `https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (!data.meals) {
+          displayEl.innerHTML = `<div class="state-msg error">No recipes found for "${query}". Try something else!</div>`;
+          return;
+        }
+
+        lastResults = data.meals;
+        showCards(data.meals);
+
+      } catch (err) {
+        displayEl.innerHTML = `<div class="state-msg error">Something went wrong. Try again!</div>`;
+      }
+    }
+
+    function showCards(meals) {
+      const displayEl = document.getElementById("display-js");
+      const labelEl = document.getElementById("results-label");
+
+      labelEl.innerHTML = `<p class="results-label">Found <strong>${meals.length} recipe${meals.length > 1 ? 's' : ''}</strong></p>`;
+      displayEl.style.display = 'grid';
+      displayEl.innerHTML = '';
+
+      meals.forEach(function (meal, i) {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.style.animationDelay = `${i * 0.05}s`;
+        card.innerHTML = `
+          <div class="card-img-wrap">
+            <img src="${meal.strMealThumb}" alt="${meal.strMeal}">
+            <div class="card-cuisine">${meal.strArea}</div>
+          </div>
+          <div class="card-body">
+            <div class="card-name">${meal.strMeal}</div>
+            <div class="card-category">${meal.strCategory}</div>
+            <button class="view-recipe-btn">View Recipe →</button>
+          </div>`;
+
+        card.querySelector('.view-recipe-btn').addEventListener('click', function () {
+          showRecipe(meal);
+        });
+
+        displayEl.appendChild(card);
+      });
+    }
+
+    function showRecipe(meal) {
+      const displayEl = document.getElementById("display-js");
+      const labelEl = document.getElementById("results-label");
+
+      labelEl.innerHTML = '';
+      displayEl.style.display = 'block';
+      displayEl.innerHTML = `
+        <div class="recipe-detail">
+          <button class="back-btn" id="back-btn">← Back to results</button>
+          <div class="recipe-hero">
+            <img src="${meal.strMealThumb}" alt="${meal.strMeal}">
+            <div class="recipe-meta">
+              <div class="recipe-cuisine-tag">${meal.strArea} Cuisine</div>
+              <div class="recipe-title">${meal.strMeal}</div>
+              <div class="recipe-category">Category: ${meal.strCategory}</div>
+            </div>
+          </div>
+          <div class="recipe-instructions-label">Instructions</div>
+          <div class="recipe-instructions">${meal.strInstructions}</div>
+        </div>`;
+
+      document.getElementById('back-btn').addEventListener('click', function () {
+        showCards(lastResults);
+      });
+    }
+
+    function search() {
+      document.getElementById("Search-button").addEventListener('click', fetcher);
+      document.getElementById("Input-js").addEventListener('keydown', e => {
+        if (e.key === 'Enter') fetcher();
+      });
+    }
+
+    search();
+  </script>
+</body>
+</html>
