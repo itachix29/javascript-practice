@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Quiz App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #0a0a0a;
+      --white: #f5f5f0;
+      --accent: #ff3c00;
+      --accent-dim: #cc3000;
+      --gray: #1e1e1e;
+      --gray-mid: #2e2e2e;
+      --gray-light: #888;
+      --correct: #00e676;
+      --wrong: #ff3c00;
+    }
+
+    body {
+      font-family: 'IBM Plex Mono', monospace;
+      background: var(--black);
+      color: var(--white);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Big decorative background text */
+    body::before {
+      content: 'QUIZ';
+      position: fixed;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 380px;
+      color: rgba(255,255,255,0.02);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 0;
+      letter-spacing: -10px;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 560px;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Header bar */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      border-bottom: 1px solid var(--gray-mid);
+      padding-bottom: 16px;
+    }
+    .top-bar-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.3em;
+      color: var(--gray-light);
+    }
+    .question-counter {
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      font-weight: 600;
+      background: rgba(255, 60, 0, 0.1);
+      border: 1px solid rgba(255, 60, 0, 0.3);
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+
+    /* Question */
+    #Display-question {
+      font-family: 'DM Serif Display', serif;
+      font-size: 32px;
+      line-height: 1.25;
+      color: var(--white);
+      margin-bottom: 36px;
+      min-height: 80px;
+      position: relative;
+      padding-left: 20px;
+    }
+    #Display-question::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 6px;
+      bottom: 6px;
+      width: 3px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    /* Options */
+    #options-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+
+    #options-container button {
+      background: var(--gray);
+      color: var(--white);
+      border: 1px solid var(--gray-mid);
+      border-radius: 0;
+      padding: 16px 20px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 14px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s ease;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      letter-spacing: 0.02em;
+    }
+    #options-container button .option-letter {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      color: var(--accent);
+      min-width: 20px;
+    }
+    #options-container button:hover {
+      background: var(--white);
+      color: var(--black);
+      border-color: var(--white);
+      transform: translateX(6px);
+    }
+    #options-container button:hover .option-letter {
+      color: var(--accent);
+    }
+    #options-container button.correct {
+      background: var(--correct);
+      color: var(--black);
+      border-color: var(--correct);
+    }
+    #options-container button.correct .option-letter { color: var(--black); }
+    #options-container button.wrong {
+      background: var(--wrong);
+      color: var(--white);
+      border-color: var(--wrong);
+    }
+
+    /* Bottom row */
+    .bottom-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    #Score-js {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 0.1em;
+      color: var(--white);
+    }
+    #Score-js span {
+      color: var(--accent);
+    }
+
+    #next-button {
+      background: var(--accent);
+      color: var(--white);
+      border: none;
+      padding: 14px 32px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      letter-spacing: 0.15em;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      border-radius: 0;
+    }
+    #next-button:hover { background: var(--accent-dim); }
+    #next-button:active { transform: scale(0.97); }
+
+    /* Progress bar */
+    .progress-bar {
+      height: 2px;
+      background: var(--gray-mid);
+      margin-bottom: 32px;
+      border-radius: 1px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      transition: width 0.4s ease;
+      border-radius: 1px;
+    }
+
+    /* End screen */
+    .end-screen {
+      text-align: center;
+      padding: 20px 0;
+      animation: fadeUp 0.4s ease both;
+    }
+    .end-screen .big-score {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 120px;
+      line-height: 1;
+      color: var(--accent);
+      text-shadow: 0 0 40px rgba(255,60,0,0.3);
+    }
+    .end-screen .end-label {
+      font-size: 12px;
+      letter-spacing: 0.25em;
+      color: var(--gray-light);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .end-screen .end-msg {
+      font-family: 'DM Serif Display', serif;
+      font-style: italic;
+      font-size: 22px;
+      color: var(--white);
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="top-bar">
+      <div class="top-bar-title">Daily Quiz</div>
+      <div class="question-counter" id="question-counter">Q 1 / 3</div>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+    </div>
+
+    <div id="Display-question">Question:</div>
+    <div id="options-container"></div>
+
+    <div class="bottom-row">
+      <p id="Score-js">SCORE: <span>0</span></p>
+      <button id="next-button">Next →</button>
+    </div>
+  </div>
+
+  <!--Polished With AI-->
+  <script>
+    const letters = ['A', 'B', 'C', 'D'];
+
+    let arr = [
+      {
+        question: "What color is Pikachu?",
+        options: ["Yellow", "Red", "White", "Pink"],
+        answer: "Yellow"
+      },
+      {
+        question: "Capital of India?",
+        options: ["Mumbai", "Nagpur", "New Delhi", "Pune"],
+        answer: "New Delhi"
+      },
+      {
+        question: "What is the value of Pi?",
+        options: ["1.088", "2.66", "Doesn't exist", "3.14"],
+        answer: "3.14"
+      }
+    ];
+
+    let currentIndex = 0;
+    let currentScore = 0;
+
+    function updateProgress() {
+      const pct = (currentIndex / arr.length) * 100;
+      document.getElementById('progress-fill').style.width = pct + '%';
+      document.getElementById('question-counter').textContent = `Q ${currentIndex + 1} / ${arr.length}`;
+    }
+
+    function displayQuestion() {
+      updateProgress();
+      document.getElementById("Display-question").innerHTML = arr[currentIndex].question;
+      const container = document.getElementById("options-container");
+      container.innerHTML = "";
+
+      arr[currentIndex].options.forEach(function (option, i) {
+        const button = document.createElement("button");
+        button.innerHTML = `<span class="option-letter">${letters[i]}</span>${option}`;
+        button.dataset.value = option;
+
+        button.addEventListener("click", function () {
+          // disable all buttons after answer
+          const allBtns = container.querySelectorAll('button');
+          allBtns.forEach(btn => {
+            btn.style.pointerEvents = 'none';
+            if (btn.dataset.value === arr[currentIndex].answer) {
+              btn.classList.add('correct');
+            }
+          });
+
+          if (option === arr[currentIndex].answer) {
+            currentScore++;
+            updateScore();
+          } else {
+            button.classList.add('wrong');
+          }
+        });
+
+        container.appendChild(button);
+      });
+    }
+
+    function updateScore() {
+      document.getElementById("Score-js").innerHTML = `SCORE: <span>${currentScore}</span>`;
+    }
+
+    function getEndMessage(score, total) {
+      const pct = score / total;
+      if (pct === 1) return "Perfect score. Legendary. 🏆";
+      if (pct >= 0.6) return "Solid effort. Keep it up.";
+      return "Room to grow. Try again!";
+    }
+
+    function nextQuestion() {
+      document.getElementById("next-button").addEventListener('click', function () {
+        if (currentIndex >= arr.length - 1) {
+          // End screen
+          document.querySelector('.container').innerHTML = `
+            <div class="end-screen">
+              <div class="end-label">Final Score</div>
+              <div class="big-score">${currentScore}/${arr.length}</div>
+              <div class="end-msg">${getEndMessage(currentScore, arr.length)}</div>
+            </div>`;
+        } else {
+          currentIndex++;
+          displayQuestion();
+        }
+      });
+    }
+
+    displayQuestion();
+    nextQuestion();
+  </script>
+</body>
+</html>
