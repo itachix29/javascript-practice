@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>GitHub Profiles</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Cousine:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f0ebe3;
+      --paper: #faf7f2;
+      --ink: #1a1612;
+      --ink-light: #6b6458;
+      --border: #d4cdc4;
+      --accent: #2d6a4f;
+      --accent-light: #52b788;
+      --accent-glow: rgba(45, 106, 79, 0.15);
+      --red: #c1440e;
+      --stamp: #c1440e;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Subtle grid background like graph paper */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(26,22,18,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(26,22,18,0.04) 1px, transparent 1px);
+      background-size: 32px 32px;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 520px;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Header */
+    .header {
+      margin-bottom: 28px;
+    }
+    .header-tag {
+      font-family: 'Cousine', monospace;
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .header-tag::before {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 2px;
+      background: var(--accent);
+    }
+    .header h1 {
+      font-size: 40px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+    .header h1 span { color: var(--accent); }
+
+    /* Search */
+    .search-card {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 12px rgba(26,22,18,0.06), 0 1px 0 rgba(255,255,255,0.8) inset;
+    }
+
+    #Input-js {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-family: 'Cousine', monospace;
+      font-size: 14px;
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    #Input-js::placeholder { color: var(--ink-light); }
+    #Input-js:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    #Search-button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 22px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      letter-spacing: 0.02em;
+    }
+    #Search-button:hover { background: #235c43; }
+    #Search-button:active { transform: scale(0.97); }
+
+    /* Profile card */
+    #display-js {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(26,22,18,0.06), 0 1px 0 rgba(255,255,255,0.8) inset;
+      min-height: 60px;
+    }
+
+    .profile-content {
+      animation: fadeUp 0.35s ease both;
+    }
+
+    /* Top banner */
+    .profile-banner {
+      background: var(--accent);
+      height: 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .profile-banner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 12px,
+        rgba(255,255,255,0.04) 12px,
+        rgba(255,255,255,0.04) 24px
+      );
+    }
+
+    /* Stamp decoration */
+    .profile-banner::after {
+      content: 'VERIFIED';
+      position: absolute;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%) rotate(12deg);
+      font-family: 'Cousine', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: rgba(255,255,255,0.2);
+      border: 2px solid rgba(255,255,255,0.2);
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+
+    .profile-body {
+      padding: 0 28px 28px;
+    }
+
+    .avatar-wrap {
+      margin-top: -40px;
+      margin-bottom: 16px;
+      position: relative;
+      display: inline-block;
+    }
+    .avatar-wrap img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 4px solid var(--paper);
+      box-shadow: 0 4px 16px rgba(26,22,18,0.15);
+      display: block;
+    }
+    .avatar-badge {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      width: 20px;
+      height: 20px;
+      background: var(--accent);
+      border-radius: 50%;
+      border: 3px solid var(--paper);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      color: white;
+    }
+
+    .profile-name {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      margin-bottom: 2px;
+    }
+    .profile-login {
+      font-family: 'Cousine', monospace;
+      font-size: 13px;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+    .profile-bio {
+      font-size: 14px;
+      color: var(--ink-light);
+      line-height: 1.6;
+      margin-bottom: 20px;
+      font-style: italic;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin-bottom: 20px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .stat-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+    }
+    .stat-label {
+      font-family: 'Cousine', monospace;
+      font-size: 10px;
+      color: var(--ink-light);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 2px;
+    }
+
+    .profile-footer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .profile-location {
+      font-family: 'Cousine', monospace;
+      font-size: 12px;
+      color: var(--ink-light);
+    }
+    .view-btn {
+      margin-left: auto;
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      border-radius: 8px;
+      padding: 7px 16px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      display: inline-block;
+    }
+    .view-btn:hover {
+      background: var(--accent);
+      color: white;
+    }
+
+    /* States */
+    .state-msg {
+      padding: 28px;
+      text-align: center;
+      font-family: 'Cousine', monospace;
+      font-size: 13px;
+      color: var(--ink-light);
+      letter-spacing: 0.05em;
+    }
+    .state-msg.error { color: var(--red); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-tag">Developer Search</div>
+      <h1>GitHub<span>.</span></h1>
+    </div>
+
+    <div class="search-card">
+      <input placeholder="Enter a username..." id="Input-js">
+      <button id="Search-button">Search</button>
+    </div>
+
+    <div id="display-js">
+      <div class="state-msg">// Search for a GitHub user above</div>
+    </div>
+  </div>
+
+  <!--Polished With AI-->
+  <script>
+    async function fetcher() {
+      const username = document.getElementById("Input-js").value.trim();
+      if (!username) return;
+
+      const displayEl = document.getElementById("display-js");
+      displayEl.innerHTML = `<div class="state-msg">// Fetching profile...</div>`;
+
+      try {
+        const url = `https://api.github.com/users/${username}`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.message === "Not Found") {
+          displayEl.innerHTML = `<div class="state-msg error">// User not found. Check the username.</div>`;
+          return;
+        }
+
+        displayEl.innerHTML = `
+          <div class="profile-content">
+            <div class="profile-banner"></div>
+            <div class="profile-body">
+              <div class="avatar-wrap">
+                <img src="${data.avatar_url}" alt="${data.login}">
+                <div class="avatar-badge">✓</div>
+              </div>
+              <div class="profile-name">${data.name || data.login}</div>
+              <div class="profile-login">@${data.login}</div>
+              ${data.bio ? `<div class="profile-bio">"${data.bio}"</div>` : ''}
+              <div class="divider"></div>
+              <div class="stats-grid">
+                <div class="stat-box">
+                  <div class="stat-value">${data.public_repos}</div>
+                  <div class="stat-label">Repos</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-value">${data.followers}</div>
+                  <div class="stat-label">Followers</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-value">${data.following}</div>
+                  <div class="stat-label">Following</div>
+                </div>
+              </div>
+              <div class="profile-footer">
+                ${data.location ? `<span class="profile-location">📍 ${data.location}</span>` : ''}
+                <a class="view-btn" href="${data.html_url}" target="_blank">View Profile →</a>
+              </div>
+            </div>
+          </div>`;
+      } catch (err) {
+        displayEl.innerHTML = `<div class="state-msg error">// Something went wrong. Try again.</div>`;
+      }
+    }
+
+    function search() {
+      document.getElementById("Search-button").addEventListener('click', fetcher);
+      document.getElementById("Input-js").addEventListener('keydown', e => {
+        if (e.key === 'Enter') fetcher();
+      });
+    }
+
+    search();
+  </script>
+</body>
+</html>
